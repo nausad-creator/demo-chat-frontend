@@ -1,0 +1,118 @@
+<!--  Header  -->
+<header id="header" class="fixed-top">
+	<div class="container d-flex align-items-center">
+		<a routerLink="/" routerLinkActive="active" class="logo mr-auto"><img src="assets/images/logo.png"
+				alt="" class="img-fluid"></a>
+		<nav class="nav-menu d-none d-lg-block">
+			<ul class="align-items-center">
+				<li><a routerLink="/content/about-us" routerLinkActive="active">About Us</a></li>
+				<li><a routerLink="/content/contact-us" routerLinkActive="active">Contact Us</a></li>
+				<li><a routerLink="/content/faqs" routerLinkActive="active">FAQ</a></li>
+			</ul>
+		</nav>
+	</div>
+</header>
+<main id="main" style="overflow:hidden;position:relative;">
+	<div class="sapretor"></div>
+	<section class="dshbord-section pt-3 pb-3">
+		<div class="container">
+			<div class="row content align-items-center justify-content-center" style="min-height:450px;">
+				<div class="col-lg-5 col-md-6">
+					<div class="card">
+						<div class="card-body" [loader]="(auth$ | async)?.isSearch">
+							<!-- error handler -->
+							<div class="alert alert-danger" role="alert"
+								*ngIf="(auth$ | async)?.errorMessage === 'Incorrect email or password.'">
+								<h5 class="alert-heading text-center">Error!</h5>
+								<p class="mb-0 text-center">{{(auth$ |
+									async)?.errorMessage}}</p>
+							</div>
+							<!-- handler end -->
+							<form [formGroup]="logIn" (ngSubmit)="onClickLogin(logIn.value)"
+								class="bootstrap-form login-form"
+								novalidate="novalidate" id="login-form"
+								name="login-form">
+								<h3 class="text-dark mb-0">User Login</h3>
+								<p class="text-muted">Enter your credentials to login to
+									your account.</p>
+								<br>
+								<div class="form-row">
+									<div
+										class="col-md-12 form-group position-relative with-addons">
+										<span class="addons"><i
+												class="fa fa-user"></i></span>
+										<input type="email" #userEmailLogin
+											(keydown.space)="$event.preventDefault();"
+											formControlName="userEmail"
+											id="inputEmail" name="Email"
+											class="form-control email"
+											placeholder="Enter Email*"
+											autocomplete="off" />
+										<small class="text-danger"
+											*ngIf="logIn.controls['userEmail'].hasError('required')">Please
+											enter email.</small>
+										<small class="text-danger"
+											*ngIf="logIn.controls['userEmail'].hasError('pattern') && (logIn.controls['userEmail'].dirty || logIn.controls['userEmail'].touched)">Please
+											enter valid email.</small>
+										<div class="validate"></div>
+									</div>
+									<div
+										class="col-md-12 form-group position-relative with-addons">
+										<a class="forgotpin" data-toggle="modal"
+											(click)="openForgot()">Forgot?</a>
+										<a class="eyeIcon cursr"><i class="fa "
+												[ngClass]="{'fa-eye': !hide_0, 'fa-eye-slash': hide_0}"
+												(click)="hide_0 = !hide_0"></i></a>
+										<span class="addons"><i
+												class="fa fa-lock"></i></span>
+										<input #userPasswordLogin
+											type="password"
+											[type]=" hide_0 ? 'password' : 'text' "
+											(keydown.space)="$event.preventDefault()"
+											formControlName="userPassword"
+											name="password"
+											class="form-control"
+											id="password"
+											placeholder="Enter Password*" />
+										<small class="text-danger"
+											*ngIf="logIn.controls['userPassword'].hasError('required')">Please
+											enter password.</small>
+										<div class="validate"></div>
+									</div>
+								</div>
+								<div class="custom-control custom-checkbox">
+									<input type="checkbox" formControlName="terms"
+										class="custom-control-input"
+										id="customCheck" name="example1">
+									<label class="custom-control-label"
+										for="customCheck">Remember Me</label>
+								</div>
+								<br>
+								<div class="text-center pt-4">
+									<p><button type="submit"
+											class="get-started-btn btnlogin">Login</button>
+									</p>
+									<span>New User? <a href="#">Sign Up</a></span>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</main>
+
+<!-- Footer -->
+<footer id="footer" class="position-relative">
+	<div class="container d-md-flex py-4">
+		<div class="mr-md-auto text-center text-md-left">
+			<div class="copyright">&copy; 2020 the english monk, All Rights reserved.</div>
+		</div>
+		<div class="footermenu">
+			<a routerLink="/content/privacy-policy" routerLinkActive="active">Privacy Policy</a>
+			<a routerLink="/content/terms-and-conditions" routerLinkActive="active">Terms & Conditions</a>
+		</div>
+	</div>
+</footer>
+<!-- End Footer -->

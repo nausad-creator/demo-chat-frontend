@@ -1,0 +1,32 @@
+{
+  "/auth/signup/*": {
+    "target": "http://127.0.0.1:8080/api/v1",
+    "secure": false,
+    "loglevel": "debug",
+    "changeOrigin": true
+  },
+  "/auth/login/*": {
+    "target": "http://127.0.0.1:8080/api/v1",
+    "secure": false,
+    "loglevel": "debug",
+    "changeOrigin": true
+  },
+  "/auth/forgot-password/*": {
+    "target": "http://127.0.0.1:8080/api/v1",
+    "secure": false,
+    "loglevel": "debug",
+    "changeOrigin": true
+  },
+  "/auth/otp-verification/*": {
+    "target": "http://127.0.0.1:8080/api/v1",
+    "secure": false,
+    "loglevel": "debug",
+    "changeOrigin": true
+  },
+  "/auth/reset-password/*": {
+    "target": "http://127.0.0.1:8080/api/v1",
+    "secure": false,
+    "loglevel": "debug",
+    "changeOrigin": true
+  }
+}
