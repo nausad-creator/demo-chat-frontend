@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { CookieService } from 'ngx-cookie-service';
 import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { State } from 'src/app';
@@ -29,17 +30,20 @@ export class AuthEffects {
 			switchMap(action => this.root.signIn(action[0].query).pipe(
 				map(data => new LoginEndedSuccess(data.status === 'true' ? {
 					data: data?.data[0],
+					token: data?.tokens,
 					message: data?.message,
 					status: data?.status,
 					query: action[0].query
 				} : {
 					data: null,
+					token: null,
 					message: 'Incorrect email or password.',
 					status: 'false',
 					query: action[0]?.query
 				}),
 					catchError(() => of(new LoginFailure({
 						data: null,
+						token: null,
 						message: 'Incorrect email or password.',
 						status: 'false',
 						query: action[0]?.query
@@ -52,7 +56,8 @@ export class AuthEffects {
 		return this.actions$.pipe(ofType(AuthActionTypes.LOGIN_ENDED_SUCCESS),
 			map((a) => {
 				if (a?.payload?.status === 'true') {
-					this.root.SNACKBAR$.next({ textLabel: 'Logged in successfully.', status: 'login' });
+					this.root.SNACKBAR$.next({ textLabel: 'Logged in successfully.', status: 'login', timeoutMs: 5000 });
+					this.cookie.set('auth', a.payload.token.access.token, new Date(a.payload.token.access.expires), '/', 'localhost', false);
 					if (JSON.parse(a.payload.query)?.terms === true) {
 						this.root.updateUser(a.payload.data);
 						localStorage.setItem('USER_LOGGED', JSON.stringify(a?.payload?.data));
@@ -115,7 +120,7 @@ export class AuthEffects {
 			map((a) => {
 				if (a?.payload?.status === 'true') {
 					this.root.updateUser(a.payload.data);
-					this.root.SNACKBAR$.next({ textLabel: 'You have successfully registered.', status: 'register' });
+					this.root.SNACKBAR$.next({ textLabel: 'You have successfully registered.', status: 'register', timeoutMs: 8000 });
 					sessionStorage.setItem('USER_LOGGED', JSON.stringify(a?.payload?.data));
 					localStorage.removeItem('USER_LOGGED');
 				}
@@ -171,9 +176,9 @@ export class AuthEffects {
 			map((a) => {
 				if (a?.payload?.status === 'true') {
 					if (!isNaN(+JSON.parse(a.payload.query)?.userEmail)) {
-						this.root.SNACKBAR$.next({ textLabel: 'We have sent otp on your registered mobile.', status: 'forgot' });
+						this.root.SNACKBAR$.next({ textLabel: 'We have sent otp on your registered mobile.', status: 'forgot', timeoutMs: 5000 });
 					} else {
-						this.root.SNACKBAR$.next({ textLabel: 'We have sent otp on your registered email.', status: 'forgot' });
+						this.root.SNACKBAR$.next({ textLabel: 'We have sent otp on your registered email.', status: 'forgot', timeoutMs: 5000 });
 					}
 				}
 			})
@@ -227,7 +232,7 @@ export class AuthEffects {
 		return this.actions$.pipe(ofType(AuthActionTypes.VERIFY_ENDED_SUCCESS),
 			map((a) => {
 				if (a?.payload?.status === 'true') {
-					this.root.SNACKBAR$.next({ textLabel: 'OTP verified successfully.', status: 'verify' });
+					this.root.SNACKBAR$.next({ textLabel: 'OTP verified successfully.', status: 'verify', timeoutMs: 5000 });
 				}
 			})
 		);
@@ -280,7 +285,7 @@ export class AuthEffects {
 					this.root.updateUser(a.payload.data);
 					localStorage.removeItem('USER_LOGGED');
 					sessionStorage.setItem('USER_LOGGED', JSON.stringify(a?.payload?.data));
-					this.root.SNACKBAR$.next({ textLabel: 'Password updated successfully.', status: 'reset' });
+					this.root.SNACKBAR$.next({ textLabel: 'Password updated successfully.', status: 'reset', timeoutMs: 5000 });
 				}
 			})
 		);
@@ -321,6 +326,7 @@ export class AuthEffects {
 			| StartReset
 			| ResetEndedSuccess>,
 		private root: AuthenticationService,
+		private cookie: CookieService,
 		private router: Router,
 		private store: Store<State>) { }
 

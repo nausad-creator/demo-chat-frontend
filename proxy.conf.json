@@ -28,5 +28,17 @@
     "secure": false,
     "loglevel": "debug",
     "changeOrigin": true
+  },
+  "/get/users/*": {
+    "target": "http://127.0.0.1:8080/api/v1",
+    "secure": false,
+    "loglevel": "debug",
+    "changeOrigin": true
+  },
+  "/chat/get-chat/*": {
+    "target": "http://127.0.0.1:8080/api/v1",
+    "secure": false,
+    "loglevel": "debug",
+    "changeOrigin": true
   }
 }

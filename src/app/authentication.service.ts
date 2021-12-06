@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subject, throwError } from 'rxjs';
 import { catchError, map, retry, shareReplay } from 'rxjs/operators';
-import { USER_RESPONSE } from './interface';
+import { Token, User } from './interface';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -16,15 +16,15 @@ export class AuthenticationService {
 	otpResend = '/users/otp-resend';
 	changeUrl = '/users/user-change-password';
 	// user-subject
-	userSubject: BehaviorSubject<USER_RESPONSE>;
-	user: Observable<USER_RESPONSE>;
-	SNACKBAR$: Subject<{ textLabel: string; status: string }> = new BehaviorSubject<{ textLabel: string; status: string }>({ textLabel: '', status: '' });
+	userSubject: BehaviorSubject<User>;
+	user: Observable<User>;
+	SNACKBAR$: Subject<{ textLabel: string; status: string; timeoutMs: number }> = new BehaviorSubject<{ textLabel: string; status: string; timeoutMs: number }>({ textLabel: '', status: '', timeoutMs: 5000 });
 	SHOW_SNACKBAR$ = this.SNACKBAR$.asObservable();
 
 	constructor(
 		private router: Router,
 		private http: HttpClient) {
-		this.userSubject = new BehaviorSubject<USER_RESPONSE>(JSON.parse(sessionStorage.getItem('USER_LOGGED') ? sessionStorage.getItem('USER_LOGGED') : localStorage.getItem('USER_LOGGED')));
+		this.userSubject = new BehaviorSubject<User>(JSON.parse(sessionStorage.getItem('USER_LOGGED') ? sessionStorage.getItem('USER_LOGGED') : localStorage.getItem('USER_LOGGED')));
 		this.user = this.userSubject.asObservable();
 	}
 
@@ -43,12 +43,13 @@ export class AuthenticationService {
 		return typeof (token) === 'string' ? true : false;
 	}
 
-	get userValue(): USER_RESPONSE {
+	get userValue(): User {
 		return this.userSubject.value;
 	}
 
 	signIn = (item: string): Observable<{
-		data: USER_RESPONSE[];
+		data: User[];
+		tokens: Token;
 		status: string;
 		message: string;
 	}> => {
@@ -57,7 +58,8 @@ export class AuthenticationService {
 			.set('userPassword', JSON.parse(item).userPassword);
 		return this.http
 			.post<{
-				data: USER_RESPONSE[];
+				data: User[];
+				tokens: Token;
 				status: string;
 				message: string;
 			}[]>(this.login, params, this.httpOptions)
@@ -82,7 +84,7 @@ export class AuthenticationService {
 	}
 
 	otpVerification = (item: string): Observable<{
-		data: USER_RESPONSE[];
+		data: User[];
 		status: string;
 		message: string;
 	}> => {
@@ -91,7 +93,7 @@ export class AuthenticationService {
 			.set('userOTP', JSON.parse(item).userOTP);
 		return this.http
 			.post<{
-				data: USER_RESPONSE[];
+				data: User[];
 				status: string;
 				message: string;
 			}[]>(this.otpVerify, params, this.httpOptions)
@@ -111,16 +113,16 @@ export class AuthenticationService {
 	}
 
 	resetPassword = (item: string): Observable<{
-		data: USER_RESPONSE[];
+		data: User[];
 		status: string;
 		message: string;
 	}> => {
 		const params = new HttpParams()
 			.set('userID', JSON.parse(item).userID)
-			.set('userPassword', JSON.parse(item).userPassword);
+			.set('userPassword', JSON.parse(item).userNewPassword);
 		return this.http
 			.post<{
-				data: USER_RESPONSE[];
+				data: User[];
 				status: string;
 				message: string;
 			}[]>(this.reset, params, this.httpOptions)
@@ -143,7 +145,7 @@ export class AuthenticationService {
 	}
 
 	signup = (item: string): Observable<{
-		data: USER_RESPONSE[];
+		data: User[];
 		status: string;
 		message: string;
 	}> => {
@@ -155,13 +157,13 @@ export class AuthenticationService {
 			.set('userCountryCode', JSON.parse(item).userCountryCode)
 			.set('userMobile', JSON.parse(item).userMobile)
 			.set('userProfilePicture', JSON.parse(item).userProfilePicture)
-			.set('userDeviceType', JSON.parse(item).userDeviceType)
-			.set('userDeviceID', JSON.parse(item).userDeviceID)
-			.set('apiType', JSON.parse(item).apiType)
-			.set('apiVersion', JSON.parse(item).apiVersion);
+			.set('userDeviceType', 'web')
+			.set('userDeviceID', 'xxyyzzz')
+			.set('apiType', 'web')
+			.set('apiVersion', '1.0');
 		return this.http
 			.post<{
-				data: USER_RESPONSE[];
+				data: User[];
 				status: string;
 				message: string;
 			}[]>(this.registration, params, this.httpOptions)
@@ -183,26 +185,15 @@ export class AuthenticationService {
 			userPassword: '',
 			userProfilePicture: '',
 			languageID: '',
-			nationalityID: '',
 			userDeviceType: '',
 			userDeviceID: '',
 			userVerified: '',
-			userEmailNotification: '',
-			userPushNotification: '',
-			userSMSNotification: '',
 			userStatus: '',
 			userOTP: '',
 			userDOB: '',
-			userSignedRefKey: '',
-			userReferKey: '',
-			userD365ID: '',
 			userCreatedDate: '',
 			languageName: '',
-			address: [],
-			settings: [],
-			storeID: '',
-			storeName: '',
-			stores: [],
+			chats: null
 		});
 		if (window.sessionStorage) { sessionStorage.clear(); }
 		if (this.router.url.startsWith('/user')) {
@@ -210,7 +201,7 @@ export class AuthenticationService {
 		}
 	}
 
-	updateUser = (user: USER_RESPONSE) => {
+	updateUser = (user: User) => {
 		this.userSubject.next(user);
 	}
 

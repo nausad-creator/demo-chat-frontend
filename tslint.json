@@ -102,7 +102,9 @@
     },
     "variable-name": {
       "options": [
-        "ban-keywords"
+	      "allow-leading-underscore",
+	      "allow-trailing-underscore",
+	      "allow-snake-case"
       ]
     },
     "whitespace": {

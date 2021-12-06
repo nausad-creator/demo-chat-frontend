@@ -10,11 +10,14 @@
 					<li class="drop-down">
 						<a><span class="user-circle"><img class="user_img"
 									src="assets/images/logo.png" alt=""></span>
-							<span class="u_name ml-1">{{'Nausad Ansari'}}</span></a>
+							<span class="u_name ml-1">{{((auth.user | async)?.userFirstName
+								+
+								' ' + (auth.user | async)?.userLastName) |
+								titlecase}}</span></a>
 						<ul>
 							<li><a>MyProfile</a></li>
 							<li><a>Change Password</a></li>
-							<li><a>Logout</a></li>
+							<li><a (click)="logout()">Logout</a></li>
 						</ul>
 					</li>
 				</ul>

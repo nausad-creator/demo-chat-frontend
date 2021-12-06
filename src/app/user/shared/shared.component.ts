@@ -1,4 +1,10 @@
+import { AsyncPipe } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { State } from 'src/app';
+import { AuthenticationService } from 'src/app/authentication.service';
+import { LoadInitialNewUsers } from 'src/app/state/actions/users.actions';
 
 @Component({
 	selector: 'app-shared',
@@ -8,7 +14,12 @@ import { Component, HostListener, OnInit } from '@angular/core';
 })
 export class SharedComponent implements OnInit {
 	windowScrolled: boolean;
-	constructor() { }
+	constructor(
+		private store: Store<State>,
+		public auth: AuthenticationService,
+		private router: Router,
+		private async: AsyncPipe
+	) { }
 	@HostListener('window:scroll', [])
 	onWindowScroll() {
 		if (
@@ -36,5 +47,15 @@ export class SharedComponent implements OnInit {
 		})();
 	}
 	ngOnInit(): void {
+		this.store.dispatch(new LoadInitialNewUsers(JSON.stringify({
+			userID: this.async.transform(this.auth.user)?.userID,
+			searchword: '',
+			pagesize: '10',
+			page: '1',
+			sortBy: ''
+		})));
+	}
+	logout = () => {
+		this.router.navigate(['/']);
 	}
 }

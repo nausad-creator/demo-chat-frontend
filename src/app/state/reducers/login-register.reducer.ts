@@ -1,9 +1,9 @@
-import { USER_RESPONSE } from 'src/app/interface';
+import { User } from 'src/app/interface';
 import { All, AuthActionTypes } from '../actions/login-register.actions';
 
 // user login
 export interface UserLoginRegister {
-	user: USER_RESPONSE;
+	user: User;
 	errorMessage: string;
 	query: string;
 	userMobile?: string;

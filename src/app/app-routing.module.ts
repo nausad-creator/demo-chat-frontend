@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { NotUserGuard } from './not-user.guard';
 
 const routes: Routes = [
 	{
@@ -45,10 +44,6 @@ const routes: Routes = [
 				]
 			}
 		}
-	},
-	{
-		path: 'content',
-		loadChildren: () => import('./cms/cms.module').then(m => m.CmsModule)
 	},
 	{ path: '404', component: NotFoundComponent },
 	{ path: '**', redirectTo: '/404' }

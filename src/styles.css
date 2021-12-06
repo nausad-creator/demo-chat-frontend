@@ -7,3 +7,35 @@
 .dropdown-toggle::after {
   content: none;
 }
+
+.overflow-list {
+  height: 350px;
+  max-height: 350px;
+}
+
+* {
+  margin: 0;
+  padding: 0
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: grey;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: grey;
+}

@@ -1,12 +1,15 @@
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Observable } from 'rxjs';
 import { State, user } from 'src/app';
-import { USER_RESPONSE } from 'src/app/interface';
+import { AuthenticationService } from 'src/app/authentication.service';
+import { User } from 'src/app/interface';
 import { Login } from 'src/app/state/actions/login-register.actions';
+import { SubSink } from 'subsink';
 import { ForgotComponent } from '../forgot/forgot.component';
+import { SignupComponent } from '../signup/signup.component';
 
 @Component({
 	selector: 'app-home',
@@ -15,21 +18,24 @@ import { ForgotComponent } from '../forgot/forgot.component';
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HomeComponent {
+export class HomeComponent implements OnDestroy {
 	hide_0 = true;
 	logIn: FormGroup;
 	auth$: Observable<{
-		user: USER_RESPONSE,
+		user: User,
 		query: string,
 		isSearch: boolean,
 		errorMessage: string
 	}> = this.store.select(user);
+	bsModal: BsModalRef;
+	subs = new SubSink();
 	@ViewChild('userEmailLogin', { static: false }) userEmailLogin: ElementRef;
 	@ViewChild('userPasswordLogin', { static: false }) userPasswordLogin: ElementRef;
 	constructor(
 		private modal: BsModalService,
 		private fb: FormBuilder,
-		private store: Store<State>
+		private store: Store<State>,
+		public auth: AuthenticationService
 	) {
 		// for Login
 		this.logIn = this.fb.group({
@@ -38,6 +44,14 @@ export class HomeComponent {
 			languageID: ['1'],
 			terms: [true],
 		});
+		this.subs.add(this.auth.user.subscribe(u => {
+			if (u && this.bsModal?.content) {
+				this.bsModal.hide();
+			}
+		}));
+	}
+	ngOnDestroy(): void {
+		this.subs.unsubscribe();
 	}
 	onClickLogin = (post: {
 		userEmail: string;
@@ -114,6 +128,14 @@ export class HomeComponent {
 	openForgot = () => {
 		this.modal.show(ForgotComponent, {
 			id: 2, backdrop: 'static',
+			keyboard: false,
+			animated: true,
+			ignoreBackdropClick: true,
+		});
+	}
+	openRegister = () => {
+		this.bsModal = this.modal.show(SignupComponent, {
+			id: 1, backdrop: 'static',
 			keyboard: false,
 			animated: true,
 			ignoreBackdropClick: true,

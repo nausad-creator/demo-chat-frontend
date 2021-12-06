@@ -1,16 +1,18 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { SharedComponent } from './shared/shared.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgxLoaderIndicatorModule } from 'ngx-loader-indicator';
 import { UserGuard } from '../user.guard';
+import { NgScrollbarModule } from 'ngx-scrollbar';
 
 @NgModule({
 	declarations: [SharedComponent],
 	imports: [
 		CommonModule,
 		FormsModule,
+		NgScrollbarModule,
 		NgxLoaderIndicatorModule.forRoot({
 			loaderStyles: {
 				background: 'rgba(253 252 246 / 2%)',
@@ -42,6 +44,7 @@ import { UserGuard } from '../user.guard';
 				]
 			},
 		]),
-	]
+	],
+	providers: [AsyncPipe]
 })
 export class UserModule { }

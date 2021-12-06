@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { State, user } from 'src/app';
 import { Observable } from 'rxjs';
 import { SubSink } from 'subsink';
-import { Otp } from 'src/app/interface';
+import { OtpInterface } from 'src/app/interface';
 import { Verify } from 'src/app/state/actions/login-register.actions';
 import { map } from 'rxjs/operators';
 import { ResetPasswordComponent } from '../reset-password/reset-password.component';
@@ -60,10 +60,10 @@ import { ResetPasswordComponent } from '../reset-password/reset-password.compone
 						</div>
 						<div class="invalid-feedback">Please enter pin</div>
 					</div>
-					<br>
-					<button class="btn btn-lg btn-primary btn-block" type="submit"
-						data-toggle="modal" data-backdrop="static"
-						data-keyboard="false">Continue</button>
+					<!-- <br> -->
+					<div class="col-md-12 col-sm-12 pt-3 pb-3 text-center">
+						<button type="submit" class="get-started-btn btnlogin">Continue</button>
+					</div>
 				</form>
 			</div>
 		</div>
@@ -120,13 +120,13 @@ export class OtpComponent implements OnInit, OnDestroy {
 			userOTP4: [null, Validators.compose([Validators.pattern('^[0-9]*$')])],
 			languageID: ['1'],
 			userOTP: [''],
-			loginuserID: [this.list[0].res.userID],
+			userID: [this.list[0].res.userID],
 			userMobile: [this.list[0].res.userMobile],
 		});
 		this.focus();
 		this.message = `Please enter verification code which we have sent to your registered ${this.list[0].msg}`;
 	}
-	onSubmitOTP = (post: Otp) => {
+	onSubmitOTP = (post: OtpInterface) => {
 		this.checkInputFocus(post);
 		if (!post.userOTP1) {
 			this.verificationForm.get('userOTP1').setValidators([Validators.pattern('^[0-9]*$'), Validators.required]);
@@ -184,7 +184,7 @@ export class OtpComponent implements OnInit, OnDestroy {
 			ignoreBackdropClick: true,
 		});
 	}
-	checkInputFocus = (post: Otp) => {
+	checkInputFocus = (post: OtpInterface) => {
 		let temp = false;
 		Object.keys(post).forEach((key) => {
 			if (key === 'userOTP1' && !post[key] && !temp) {

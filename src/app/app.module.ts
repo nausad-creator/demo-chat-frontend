@@ -23,6 +23,10 @@ import { NgProgressRouterModule } from 'ngx-progressbar/router';
 import { NgProgressModule } from 'ngx-progressbar';
 import { Router } from '@angular/router';
 import { AuthInterceptor } from './HttpErrorInterceptor';
+import { UsersEffects } from './state/effects/users.effects';
+import { NgScrollbarModule } from 'ngx-scrollbar';
+import { SkeletonsModule } from './skeletons/skeletons.module';
+import { ChatsEffects } from './state/effects/chat.effects';
 
 @NgModule({
 	declarations: [
@@ -38,6 +42,8 @@ import { AuthInterceptor } from './HttpErrorInterceptor';
 		FormsModule,
 		LazyLoadImageModule,
 		NgProgressModule,
+		SkeletonsModule,
+		NgScrollbarModule,
 		NgProgressRouterModule,
 		NgxSkeletonLoaderModule.forRoot({ animation: 'progress' }),
 		ModalModule.forRoot(),
@@ -55,7 +61,7 @@ import { AuthInterceptor } from './HttpErrorInterceptor';
 		}),
 		StoreModule.forRoot(reducers, { metaReducers }),
 		!environment.production ? StoreDevtoolsModule.instrument() : [],
-		EffectsModule.forRoot([AuthEffects]),
+		EffectsModule.forRoot([AuthEffects, UsersEffects, ChatsEffects]),
 	],
 	providers: [
 		RootService,
@@ -67,7 +73,7 @@ import { AuthInterceptor } from './HttpErrorInterceptor';
 			},
 			multi: true,
 			deps: [Router]
-		},
+		}
 	],
 	bootstrap: [AppComponent],
 })

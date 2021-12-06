@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { USER_RESPONSE } from 'src/app/interface';
+import { Token, User } from 'src/app/interface';
 
 export enum AuthActionTypes {
 	LOGIN = '[Auth] Login',
@@ -63,7 +63,8 @@ export class Login implements Action {
 export class LoginEndedSuccess implements Action {
 	readonly type = AuthActionTypes.LOGIN_ENDED_SUCCESS;
 	constructor(public payload: {
-		data: USER_RESPONSE;
+		data: User;
+		token: Token;
 		message: string;
 		status: string;
 		query: string;
@@ -76,7 +77,8 @@ export class LoginNewQuery implements Action {
 export class LoginFailure implements Action {
 	readonly type = AuthActionTypes.LOGIN_FAILURE;
 	constructor(public err: {
-		data: USER_RESPONSE;
+		data: User;
+		token: Token;
 		message: string;
 		status: string;
 		query: string;
@@ -97,7 +99,7 @@ export class Register implements Action {
 export class RegisterEndedSuccess implements Action {
 	readonly type = AuthActionTypes.REGISTER_ENDED_SUCCESS;
 	constructor(public payload: {
-		data: USER_RESPONSE;
+		data: User;
 		message: string;
 		status: string;
 		query: string;
@@ -110,7 +112,7 @@ export class RegisterNewQuery implements Action {
 export class RegisterFailure implements Action {
 	readonly type = AuthActionTypes.REGISTER_FAILURE;
 	constructor(public err: {
-		data: USER_RESPONSE;
+		data: User;
 		message: string;
 		status: string;
 		query: string;
@@ -203,7 +205,7 @@ export class Reset implements Action {
 export class ResetEndedSuccess implements Action {
 	readonly type = AuthActionTypes.RESET_ENDED_SUCCESS;
 	constructor(public payload: {
-		data: USER_RESPONSE;
+		data: User;
 		message: string;
 		status: string;
 		query: string;
@@ -216,7 +218,7 @@ export class ResetNewQuery implements Action {
 export class ResetFailure implements Action {
 	readonly type = AuthActionTypes.RESET_FAILURE;
 	constructor(public err: {
-		data: USER_RESPONSE;
+		data: User;
 		message: string;
 		status: string;
 		query: string;
@@ -329,7 +331,7 @@ export class UpdateProfile implements Action {
 export class UpdateProfileEndedSuccess implements Action {
 	readonly type = AuthActionTypes.UPDATE_PROFILE_ENDED_SUCCESS;
 	constructor(public payload: {
-		data: USER_RESPONSE;
+		data: User;
 		message: string;
 		status: string;
 		query: string;
@@ -342,7 +344,7 @@ export class UpdateProfileNewQuery implements Action {
 export class UpdateProfileFailure implements Action {
 	readonly type = AuthActionTypes.UPDATE_PROFILE_FAILURE;
 	constructor(public err: {
-		data: USER_RESPONSE;
+		data: User;
 		message: string;
 		status: string;
 		query: string;

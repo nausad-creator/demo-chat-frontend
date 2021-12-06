@@ -4,11 +4,168 @@
 		<div class="container">
 			<div class="mb-3">
 				<div class="row m-0">
-					<div class="col-xl-3 col-lg-4 col-md-4 uploadfile-conten card p-0">
-						<app-users></app-users>
+					<div class="col-xl-3 col-lg-4 col-md-4 uploadfile-conten card p-0"
+						style="max-height: 450px;">
+						<div class="">
+							<div class="aside-chat">
+								<div class="search_content p-3">
+									<div class="position-relative">
+										<form [formGroup]="searchForm">
+											<div class="form-group mb-0">
+												<div class="searchicon">
+													<i
+														class="fa fa-search"></i>
+												</div>
+												<input type="text"
+													class="form-control"
+													formControlName="preset"
+													name="preset"
+													id="preset"
+													placeholder="Search Any User...">
+											</div>
+										</form>
+									</div>
+								</div>
+
+								<div class="chat-user-listing overflow-list"
+									style="overflow:hidden;"
+									[loader]="(USER$ | async)?.isSearch && (USER$ | async)?.message !== 'initial_load'">
+									<ng-scrollbar class="my-scrollbar"
+										[visibility]="'hover'" #scrollable>
+										<div
+											*ngIf="(USER$ | async)?.users.length > 0 && (USER$ | async)?.message !== 'initial_load'">
+											<ul
+												*ngIf="USER$ | async as data">
+												<app-users
+													(change_user)="open_or_change($event);"
+													[selected]="(root.chat_view$ | async)?.userID"
+													[users]="data?.users"
+													[users_status]="users_online | async">
+												</app-users>
+											</ul>
+										</div>
+										<app-users-skeleton
+											*ngIf="(USER$ | async)?.message === 'initial_load'">
+										</app-users-skeleton>
+										<div class="row"
+											*ngIf="(USER$ | async)?.users?.length === 0 && (USER$ | async)?.message !== 'initial_load'">
+											<div class="col">
+												<div
+													class="nodata_content text-center pt-lg-5">
+													<img src="assets/images/no-data.png"
+														alt="No-Data">
+													<p class="text-muted"
+														style="padding-right:32px;">
+														No Users
+														Found.
+													</p>
+												</div>
+											</div>
+										</div>
+									</ng-scrollbar>
+								</div>
+							</div>
+						</div>
 					</div>
 					<div class="col-xl-9 col-lg-8 col-md-8 mobilr-p0">
-						<app-user-conversations></app-user-conversations>
+						<div class="card">
+							<div class="inbox-section">
+								<div class="right-detail">
+									<div class="tp-chat-tital d-flex"
+										*ngIf="(root.chat_view$ | async)?.userID">
+										<h5 [title]="(root.chat_view$ |
+										async)?.userName | titlecase" class="onlive-chater m-0"><img src="assets/images/profile-user-sm.png" alt="">
+											&nbsp;
+											{{(root.chat_view$ |
+											async)?.userName | titlecase}}
+										</h5>
+										<div
+											class="dropdown deedit-dor ml-auto">
+											<a aria-expanded="false"
+												href="#"
+												class="dropdown-toggle"
+												data-toggle="dropdown"><i
+													class="fa fa-ellipsis-v"></i></a>
+											<ul
+												class="dropdown-menu dropdown-sr">
+												<li><a href="#">Delete
+													</a></li>
+												<li><a href="#" data-toggle="modal"
+														data-target="#ModalReport">Report</a>
+												</li>
+											</ul>
+										</div>
+									</div>
+
+									<div class="main-message-dis">
+										<app-user-conversations
+											(more_chats)="more_chats($event)"
+											[chats]="(CHAT$ | async)?.grouped"
+											[isSearchMore]="(CHAT$ | async)?.isSearchMore"
+											[receiverID]="(root.chat_view$ | async)?.userID"
+											[userID]="(auth.user | async)?.userID"
+											*ngIf="(CHAT$ | async)?.chats.length > 0 && !(CHAT$ | async)?.isSearch && (root.chat_view$ | async)?.userID">
+										</app-user-conversations>
+										<app-conversations-skeleton
+											*ngIf="(CHAT$ | async)?.isSearch">
+										</app-conversations-skeleton>
+										<div class="row"
+											*ngIf="(CHAT$ | async)?.chats?.length === 0 && !(CHAT$ | async)?.isSearch && (root.chat_view$ | async)?.userID">
+											<div class="col">
+												<div
+													class="nodata_content text-center pt-lg-5">
+													<img src="assets/images/no-data.png"
+														alt="No-Data">
+													<p class="text-muted"
+														style="padding-right:32px;">
+														No Chats
+														Found.
+													</p>
+												</div>
+											</div>
+										</div>
+										<div class="row"
+											*ngIf="!(root.chat_view$ | async)?.userID">
+											<div class="col">
+												<div
+													class="nodata_content text-center pt-lg-5">
+													<img src="assets/images/wechat.jpg"
+														alt="we-chat">
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="replay-forward"
+										*ngIf="(root.chat_view$ | async)?.userID">
+										<div class="type-message">
+											<form [formGroup]="messageForm">
+												<div class="form-group">
+													<input class="form-control"
+														type="text"
+														(keyup.enter)="send()"
+														formControlName="message"
+														placeholder="Type your message...">
+													<div
+														class="sendbutton">
+														<a data-toggle="modal"
+															href="#"
+															(click)="send()"
+															id="send">
+															<i
+																class="fa fa-paper-plane"></i></a>
+													</div>
+													<div
+														class="clear">
+													</div>
+												</div>
+											</form>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -188,14 +188,14 @@ a:hover {
 }
 
 a:not([href]):not([tabindex]) {
-  color:#f27b21;
+  color: #f27b21;
   /* text-decoration: none */
 }
 
 a:not([href]):not([tabindex]):focus,
 a:not([href]):not([tabindex]):hover {
-  color:#f27b21;
-  text-decoration:none;
+  color: #f27b21;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -2206,7 +2206,7 @@ pre code {
 .table-responsive {
   display: block;
   width: 100%;
-  overflow-x:hidden;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar
 }

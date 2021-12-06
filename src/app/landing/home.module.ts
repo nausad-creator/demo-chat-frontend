@@ -7,10 +7,12 @@ import { NgxLoaderIndicatorModule } from 'ngx-loader-indicator';
 import { HomeComponent } from './home/home.component';
 import { OtpComponent } from './otp/otp.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { SignupComponent } from './signup/signup.component';
 
 @NgModule({
 	declarations: [
 		HomeComponent,
+		SignupComponent,
 		ForgotComponent,
 		OtpComponent,
 		ResetPasswordComponent

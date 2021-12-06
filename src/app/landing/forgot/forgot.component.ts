@@ -26,10 +26,10 @@ import { SubSink } from 'subsink';
 		<form [formGroup]="forgetForm" (ngSubmit)="onSubmitEmailOrMobile(forgetForm.value)" method="post"
 			class="bootstrap-form needs-validation login-form" novalidate="novalidate" id="login-form" name="login-form">
 			<h4 class="modal-title">Forgot your Password</h4>
-			<p class="text-secondary">Enter your registered email address to reset your password. </p>
+			<p class="text-secondary">Enter your registered email/ or phone number to reset your password. </p>
 			<div class="form-row pb-2">
 				<div class="form-group col-md-12">
-					<input type="email" #forgotEmail (keydown.space)="$event.preventDefault()" formControlName="userEmail" class="form-control email" placeholder="Enter Email" id="email" name="email" autocomplete="off" />
+					<input type="email" #forgotEmail (keydown.space)="$event.preventDefault()" formControlName="userEmail" class="form-control email" placeholder="Enter Email/ or Phone" id="email" name="email" autocomplete="off" />
 					<small class="text-danger" *ngIf="forgetForm.controls['userEmail'].hasError('required')">This field is required.</small>
               				<small class="text-danger" *ngIf="forgetForm.controls['userEmail'].hasError('pattern') && (forgetForm.controls['userEmail'].dirty || forgetForm.controls['userEmail'].touched)">Please enter valid email or phone.</small>
 				</div>
@@ -52,8 +52,7 @@ import { SubSink } from 'subsink';
 		border-radius: .3rem;
 		outline: 0;
 	}`,
-		`
-	.required-field::before {
+		`.required-field::before {
 		content: "*";
 		color: red;
   	}`
