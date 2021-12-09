@@ -19,7 +19,8 @@ export class RootService {
 	updatehue$: Subject<boolean> = new BehaviorSubject<boolean>(false);
 	hue$ = this.updatehue$.asObservable();
 
-	constructor(private http: HttpClient) { }
+	constructor(
+		private http: HttpClient) { }
 
 	httpOptions = {
 		headers: new HttpHeaders({
@@ -31,6 +32,13 @@ export class RootService {
 		if (JSON.parse(query)?.receiverUserID !== chat_global.receiverUserID) {
 			chat_global.receiverUserID = JSON.parse(query)?.receiverUserID;
 			this.update_chat_view$.next({ userID: JSON.parse(query)?.receiverUserID, userName: JSON.parse(query)?.receiverUserName });
+			return true;
+		} else {
+			return false;
+		}
+	}
+	isUserSelected = (selectedID: string) => {
+		if (selectedID) {
 			return true;
 		} else {
 			return false;

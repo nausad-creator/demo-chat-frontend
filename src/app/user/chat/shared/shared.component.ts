@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { AfterViewInit, Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -11,12 +11,13 @@ import { chats, State, users } from 'src/app';
 import { AuthenticationService } from 'src/app/authentication.service';
 import { Chat, DataTypeUsers, User } from 'src/app/interface';
 import { RootService } from 'src/app/root.service';
-import { ReceiveChats, SearchMoreNewChats, SearchNewQueryNewChats, StartSendReceiveChats } from 'src/app/state/actions/chat.actions';
-import { SearchMoreNewUsers, SearchNewQueryNewUsers } from 'src/app/state/actions/users.actions';
+import { ReceiveChats, ResetNewChats, SearchMoreNewChats, SearchNewQueryNewChats, StartSendReceiveChats } from 'src/app/state/actions/chat.actions';
+import { AddChatOnlineUsers, SearchMoreNewUsers, SearchNewQueryNewUsers } from 'src/app/state/actions/users.actions';
 import { SubSink } from 'subsink';
 import * as _ from 'lodash';
 import { ChatService } from 'src/app/chat.service';
 import { CookieService } from 'ngx-cookie-service';
+import { chat_global } from 'src/app/global';
 
 @Component({
 	selector: 'app-shared',
@@ -33,7 +34,8 @@ import { CookieService } from 'ngx-cookie-service';
 			--scrollbar-thumb-transition: height ease-out 150ms,width ease-out 150ms;
 			box-sizing: inherit!important;
 		}`
-	]
+	],
+	changeDetection: ChangeDetectionStrategy.Default
 })
 export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 	USER$: Observable<{
@@ -86,7 +88,6 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 		query: string
 	}>({ page: 1, totalPages: 0, totalResults: 0, limit: 10, query: '' });
 	subs = new SubSink();
-	users_online: Observable<{ userID: string }[]>;
 	searchForm: FormGroup;
 	messageForm: FormGroup;
 	@ViewChild('scrollable', { static: true }) scrollbarRef: NgScrollbar;
@@ -147,7 +148,7 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	ngOnInit(): void {
 		this.verify_to_socket();
-		this.USER$ = this.state() as Observable<{
+		this.USER$ = this.state_users() as Observable<{
 			users: User[];
 			page: number;
 			limit: number;
@@ -177,7 +178,7 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 			receiverUserID: $event?.userID,
 			receiverUserName: $event?.userName,
 			page: 1,
-			pagesize: 10,
+			pagesize: 20,
 			searchword: '',
 			sortBy: ''
 		})));
@@ -185,8 +186,11 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 	ngOnDestroy(): void {
 		this.subs.unsubscribe();
 		this.chat.logout();
+		chat_global.receiverUserID = '0';
+		this.store.dispatch(new ResetNewChats());
+		this.root.update_chat_view$.next({ userID: '', userName: '' });
 	}
-	state = () => {
+	state_users = () => {
 		return this.store.select(users).pipe(
 			map((r) => {
 				return {
@@ -198,7 +202,31 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 					limit: r?.limit,
 					totalPages: r?.totalPages,
 					totalResults: r?.totalResults,
-					users: r?.users.map((user: User) => user)
+					users: r?.users.map((user: User) => {
+						return {
+							userID: user?.userID,
+							userFirstName: user?.userFirstName,
+							userLastName: user?.userLastName,
+							userEmail: user?.userEmail,
+							userCountryCode: user?.userCountryCode,
+							userMobile: user?.userMobile,
+							userStatus: user?.userStatus,
+							userProfilePicture: user?.userProfilePicture,
+							chats: user?.chats.map(c => {
+								return {
+									chatID: c?.chatID,
+									fromUserId: c?.fromUserId,
+									toUserId: c?.toUserId,
+									senderName: c?.senderName,
+									date: c?.date,
+									time: moment(new Date(`${c?.date} ${c?.time}`)).format('hh:mm a'),
+									receiverName: c?.receiverName,
+									isRead: c?.isRead,
+									message: c?.message
+								};
+							}),
+						};
+					})
 				};
 			}),
 			tap((size) => this.ngZone.run(() => this.size_user$.next(
@@ -271,10 +299,10 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 				isSearchMore: boolean;
 			}>;
 	}
-	groupToArray = (group: Chat[], date: string) => {
+	groupToArray = (chat: Chat[], date: string) => {
 		return {
 			date,
-			data: _(group).orderBy(d => d.time, 'desc').reverse().map(c => {
+			data: _(chat).orderBy(d => d.time_in_ms, 'desc').reverse().map(c => {
 				return {
 					chatID: c?.chatID,
 					fromUserId: c?.fromUserId,
@@ -296,6 +324,8 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.came_online();
 			this.get_online_users();
 			this.get_chat();
+			this.is_typing();
+
 		}));
 	}
 	came_online = () => {
@@ -303,38 +333,49 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 			userName => {
 				setTimeout(() => {
 					this.auth.SNACKBAR$.next({ textLabel: `${userName} came online.`, status: 'chat', timeoutMs: 5000 });
-				}, 2000);
+				}, 1000);
 			}
 		);
 	}
 	get_online_users = () => {
-		this.users_online = this.chat.onlineUsers() as Observable<{ userID: string }[]>;
+		this.subs.add(this.chat.onlineUsers().subscribe(
+			(list: { userID: string }[]) => {
+				this.store.dispatch(new AddChatOnlineUsers({ users: list }));
+			}
+		));
 	}
 	get_chat = () => {
 		this.subs.add(this.chat.chat(this.async.transform(this.auth.user)?.userID)
 			.subscribe((message: string) => {
-				this.store.dispatch(new ReceiveChats({ chat: [JSON.parse(message)] }));
+				this.store.dispatch(new ReceiveChats({ chat: [JSON.parse(message)], selected: this.async.transform(this.root.chat_view$)?.userID }));
 			}));
+	}
+	is_typing = () => {
+		this.subs.add(this.chat.is_typing(this.async.transform(this.auth.user)?.userID)
+			.subscribe((info: string) => {
+				// console.log(JSON.parse(info));
+			}));
+	}
+	keyPressing = (event: KeyboardEvent) => {
+		event?.key === 'Enter' ? this.send() : this.chat.typing_message(JSON.stringify({
+			toUserId: this.async.transform(this.root.chat_view$).userID,
+			receiverName: this.async.transform(this.root.chat_view$).userName,
+		}));
 	}
 	send = () => {
 		if (this.messageForm.get('message').value) {
 			this.store.dispatch(new StartSendReceiveChats({
 				chat: [{
-					chatID: '0',
 					fromUserId: this.async.transform(this.auth.user)?.userID,
 					toUserId: this.async.transform(this.root.chat_view$).userID,
 					senderName: `${this.async.transform(this.auth.user)?.userFirstName} ${this.async.transform(this.auth.user)?.userLastName}`,
 					date: moment().format('YYYY-MM-DD'),
 					time: moment().format('HH:mm:ss'),
+					time_in_ms: new Date().getTime(),
 					chatCreatedOn: new Date(),
 					receiverName: this.async.transform(this.root.chat_view$).userName,
-					isRead: true,
 					message: this.messageForm.get('message').value.trim(),
-					apiType: 'web',
-					apiVersion: '/api/v1',
-					createdAt: new Date(),
-					id: '0',
-				}],
+				}], selected: this.async.transform(this.root.chat_view$).userID
 			}));
 			this.messageForm.get('message').patchValue('');
 		}

@@ -21,7 +21,7 @@ export interface User {
 	userDOB: string;
 	userCreatedDate: string;
 	languageName: string;
-	chats: Chat;
+	chats: Chat[];
 }
 export interface Token {
 	access: {
@@ -68,20 +68,21 @@ export interface DataTypeChats {
 	sortBy: string;
 }
 export interface Chat {
-	chatID: string;
+	chatID?: string;
 	fromUserId: string;
 	toUserId: string;
 	senderName: string;
 	date: string;
 	time: string;
+	time_in_ms: number;
 	receiverName: string;
-	isRead: boolean;
+	isRead?: boolean;
 	message: string;
-	apiType: string;
-	apiVersion: string;
+	apiType?: string;
+	apiVersion?: string;
 	chatCreatedOn: Date;
-	createdAt: Date;
-	id: string;
+	createdAt?: Date;
+	id?: string;
 }
 export interface Chats {
 	results: Chat[];

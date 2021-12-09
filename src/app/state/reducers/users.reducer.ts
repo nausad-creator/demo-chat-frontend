@@ -1,4 +1,4 @@
-import { User } from 'src/app/interface';
+import { Chat, User } from 'src/app/interface';
 import { UsersActions, UsersActionTypes } from '../actions/users.actions';
 
 export interface UsersList {
@@ -23,35 +23,59 @@ export const initial_users: UsersList = {
 	query: '',
 	isSearch: false
 };
+function update_chats(users: User[], chat: Chat[], selectedID?: string) {
+	const temp = users.map((item) =>
+		Object.assign({}, item, {
+			chats: item.userID === selectedID ? chat : item.chats
+		})
+	);
+	return temp;
+}
+function update_online_user(users: User[], list: { userID: string }[]) {
+	const temp = users.map((item) =>
+		Object.assign({}, item, {
+			userStatus: item.userID === list.filter(o => o.userID === item.userID)[0]?.userID ? 'Online' : 'Offline'
+		})
+	);
+	return temp;
+}
 export function ReducerUsers(state = initial_users, action: UsersActions): UsersList {
-	switch (action.type) {
+	switch (action?.type) {
 		case UsersActionTypes.ADD_NEW_USERS:
 			return Object.assign({}, state, {
-				users: action.payload.data[0].results,
-				page: action.payload.data[0].page,
-				limit: action.payload.data[0].limit,
-				totalPages: action.payload.data[0].totalPages,
-				totalResults: action.payload.data[0].totalResults,
-				message: action.payload.message,
-				status: action.payload.status
+				users: action?.payload?.data[0]?.results,
+				page: action?.payload?.data[0]?.page,
+				limit: action?.payload?.data[0]?.limit,
+				totalPages: action?.payload?.data[0]?.totalPages,
+				totalResults: action?.payload?.data[0]?.totalResults,
+				message: action?.payload?.message,
+				status: action?.payload?.status
 			});
 		case UsersActionTypes.ADD_NEW_MORE_USERS:
 			return Object.assign({}, state, {
-				users: [...state.users, ...action.payload.data[0].results],
-				page: action.payload.data[0].page,
-				limit: action.payload.data[0].limit,
-				totalPages: action.payload.data[0].totalPages,
-				totalResults: action.payload.data[0].totalResults,
-				message: action.payload.message,
-				status: action.payload.status
+				users: [...state.users, ...action?.payload?.data[0]?.results],
+				page: action?.payload?.data[0]?.page,
+				limit: action?.payload?.data[0]?.limit,
+				totalPages: action?.payload?.data[0]?.totalPages,
+				totalResults: action?.payload?.data[0]?.totalResults,
+				message: action?.payload?.message,
+				status: action?.payload?.status
+			});
+		case UsersActionTypes.ADD_CHAT_USERS:
+			return Object.assign({}, state, {
+				users: update_chats(state.users, action?.payload?.chat, action?.payload?.selectedID)
+			});
+		case UsersActionTypes.ADD_CHAT_ONLINE_USERS:
+			return Object.assign({}, state, {
+				users: update_online_user(state.users, action?.payload?.users)
 			});
 		case UsersActionTypes.SEARCH_NEW_QUERY_NEW_USERS:
 			return Object.assign({}, state, {
-				query: action.query
+				query: action?.query
 			});
 		case UsersActionTypes.SEARCH_MORE_NEW_USERS:
 			return Object.assign({}, state, {
-				query: action.query
+				query: action?.query
 			});
 		case UsersActionTypes.SEARCH_START_NEW_USERS:
 			return {
@@ -75,7 +99,7 @@ export function ReducerUsers(state = initial_users, action: UsersActions): Users
 			};
 		case UsersActionTypes.LOAD_INITIAL_NEW_USERS:
 			return Object.assign({}, state, {
-				query: action.query,
+				query: action?.query,
 				isSearch: true
 			});
 		case UsersActionTypes.RESET_NEW_USERS:

@@ -39,8 +39,7 @@
 												<app-users
 													(change_user)="open_or_change($event);"
 													[selected]="(root.chat_view$ | async)?.userID"
-													[users]="data?.users"
-													[users_status]="users_online | async">
+													[users]="data?.users">
 												</app-users>
 											</ul>
 										</div>
@@ -143,7 +142,7 @@
 												<div class="form-group">
 													<input class="form-control"
 														type="text"
-														(keyup.enter)="send()"
+														(keyup)="keyPressing($event)"
 														formControlName="message"
 														placeholder="Type your message...">
 													<div

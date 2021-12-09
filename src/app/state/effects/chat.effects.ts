@@ -6,7 +6,8 @@ import { catchError, filter, map, switchMap, take, tap, withLatestFrom } from 'r
 import { State } from 'src/app';
 import { ChatService } from 'src/app/chat.service';
 import { RootService } from 'src/app/root.service';
-import { AddNewChats, AddNewMoreChats, LoadInitialNewChats, SearchStartNewChats, SearchStartNewMoreChats, SearchEndedSuccessNewChats, SearchEndedSuccessMoreNewChats, SearchNewQueryNewChats, SearchMoreNewChats, FailureNewChats, ResetNewChats, ChatsActionTypes, StartSendReceiveChats, SendChats } from '../actions/chat.actions';
+import { AddNewChats, AddNewMoreChats, LoadInitialNewChats, SearchStartNewChats, SearchStartNewMoreChats, SearchEndedSuccessNewChats, SearchEndedSuccessMoreNewChats, SearchNewQueryNewChats, SearchMoreNewChats, FailureNewChats, ResetNewChats, ChatsActionTypes, StartSendReceiveChats, SendChats, ReceiveChats } from '../actions/chat.actions';
+import { SendReceiveChatUser } from '../actions/users.actions';
 
 @Injectable()
 export class ChatsEffects {
@@ -26,13 +27,21 @@ export class ChatsEffects {
 	ADD_SEND_RECEIVE_CHATS$ = createEffect(() => {
 		return this.actions$.pipe(
 			ofType(ChatsActionTypes.START_SEND_AND_RECEIVE_CHATS),
-			map(p => new SendChats({ chat: p.payload.chat })),
+			map(p => new SendChats({ chat: p?.payload?.chat, selected: p?.payload?.selected })),
+		);
+	});
+	RECEIVE_CHATS$ = createEffect(() => {
+		return this.actions$.pipe(
+			ofType(ChatsActionTypes.RECEIVE_CHATS),
+			filter((action) => this.root.isUserSelected(action?.payload?.selected)),
+			map(p => new SendReceiveChatUser({ chat: p?.payload?.chat, selectedID: p.payload?.selected })),
 		);
 	});
 	SEND$ = createEffect(() => {
 		return this.actions$.pipe(ofType(ChatsActionTypes.SEND_CHATS),
 			map((a) => {
-				this.chat.send_message(JSON.stringify(a.payload.chat[0]));
+				this.chat.send_message(JSON.stringify(a.payload?.chat[0]));
+				this.store.dispatch(new SendReceiveChatUser({ chat: a?.payload?.chat, selectedID: a.payload?.selected }));
 			})
 		);
 	},
@@ -139,6 +148,7 @@ export class ChatsEffects {
 			| SearchNewQueryNewChats
 			| SearchMoreNewChats
 			| FailureNewChats
+			| ReceiveChats
 			| ResetNewChats>,
 		private root: RootService,
 		private chat: ChatService,

@@ -40,18 +40,21 @@ export class StartSendReceiveChats implements Action {
 	readonly type = ChatsActionTypes.START_SEND_AND_RECEIVE_CHATS;
 	constructor(public payload: {
 		chat: Chat[];
+		selected: string;
 	}) { }
 }
 export class ReceiveChats implements Action {
 	readonly type = ChatsActionTypes.RECEIVE_CHATS;
 	constructor(public payload: {
 		chat: Chat[];
+		selected: string;
 	}) { }
 }
 export class SendChats implements Action {
 	readonly type = ChatsActionTypes.SEND_CHATS;
 	constructor(public payload: {
 		chat: Chat[];
+		selected: string;
 	}) { }
 }
 export class SearchStartNewChats implements Action {

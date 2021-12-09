@@ -86,7 +86,7 @@ import { SubSink } from 'subsink';
 		fadeInOnEnterAnimation(),
 		fadeOutOnLeaveAnimation()
 	],
-	changeDetection: ChangeDetectionStrategy.OnPush,
+	changeDetection: ChangeDetectionStrategy.Default,
 })
 export class UserConversationsComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
 

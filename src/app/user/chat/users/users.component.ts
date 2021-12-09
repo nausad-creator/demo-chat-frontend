@@ -7,22 +7,24 @@ import { SubSink } from 'subsink';
 @Component({
 	selector: 'app-users',
 	template: `
-	<li class="meetings-list" *ngFor="let user of users; let i=index">
+	<li class="meetings-list" *ngFor="let user of users; trackBy: user_status ;let i=index">
 	<a [@hueRotate]="state" (@hueRotate.done)="togglehue()" data-toggle="modal" href="#" (click)="change_user.emit({userID: user?.userID, userName: user?.userFirstName + ' ' + user?.userLastName})" [ngClass]="{'active':selected===user?.userID}">
 		<div class="meetings-schedul-list d-flex">
 			<div class="leftuser-img resultimg-circle">
 				<img [title]="(user?.userFirstName + ' ' + user?.userLastName) | titlecase" src="assets/images/profile-user-sm.png" alt="">
 			</div>
 			<div class="right-userdetails">
-
 				<h6 [title]="(user?.userFirstName + ' ' + user?.userLastName) | titlecase" class="mb-0">{{(user?.userFirstName + ' ' + user?.userLastName) | titlecase}}
-				<span *ngFor="let status of users_status"><i title="Online" *ngIf="status?.userID===user?.userID" class="fa fa-circle" [ngClass]="{'green': status?.userID===user?.userID}" aria-hidden="true"></i></span>
+				<i [title]="user?.userStatus === 'Online' ? 'Online' : 'Offline'" class="fa fa-circle" [ngClass]="{'green': user?.userStatus === 'Online', 'red': user?.userStatus === 'Offline'}" aria-hidden="true"></i>
 				</h6>
-				<div class="detailsmall row m-0">
-					<small>{{user?.chats?.message}}</small>
+				<div class="detailsmall row m-0" *ngIf="user?.chats.length > 0">
+					<small>{{user?.userID === user?.chats[0]?.toUserId ? 'You: ' + user?.chats[0]?.message : user?.chats[0]?.senderName + ': ' + user?.chats[0]?.message}}</small>
+				</div>
+				<div class="detailsmall row m-0" *ngIf="user?.chats.length === 0">
+					<small>Click to chat...</small>
 				</div>
 			</div>
-			<time class="timimessage ml-auto">{{user?.chats?.time}}</time>
+			<time class="timimessage ml-auto">{{user?.chats[0]?.time}}</time>
 		</div>
 	</a>
 	</li>
@@ -39,8 +41,7 @@ import { SubSink } from 'subsink';
 	],
 	animations: [
 		hueRotateAnimation()
-	],
-	changeDetection: ChangeDetectionStrategy.Default,
+	], changeDetection: ChangeDetectionStrategy.Default,
 })
 export class UsersComponent implements OnInit {
 	@Input() users: User[];
@@ -54,6 +55,9 @@ export class UsersComponent implements OnInit {
 	ngOnInit(): void {
 		this.togglehue();
 		this.state = false;
+	}
+	user_status = (i: number, user: User) => {
+		return user;
 	}
 	animatehue = () => {
 		this.root.updatehue$.next(true);

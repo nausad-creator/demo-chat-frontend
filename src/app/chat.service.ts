@@ -56,8 +56,20 @@ export class ChatService {
 		});
 	}
 
+	is_typing = (userID: string) => {
+		return new Observable<string>((observer) => {
+			socket.off(`${userID} is typing...$`).on(`${userID} is typing...$`, (info) => {
+				observer.next(info);
+			});
+		});
+	}
+
 	send_message = (temp: string) => {
 		socket.emit('message', (temp));
+	}
+
+	typing_message = (info: string) => {
+		socket.emit('typing...$', (info));
 	}
 
 	logout = () => {

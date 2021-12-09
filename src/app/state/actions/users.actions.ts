@@ -1,10 +1,12 @@
 import { Action } from '@ngrx/store';
-import { Users } from 'src/app/interface';
+import { Chat, Users } from 'src/app/interface';
 
 export enum UsersActionTypes {
 	// for NEW Users
 	ADD_NEW_USERS = '[Users] ADD_NEW_USERS',
 	ADD_NEW_MORE_USERS = '[Users] ADD_NEW_MORE_USERS',
+	ADD_CHAT_USERS = '[Users] ADD_CHAT_USERS',
+	ADD_CHAT_ONLINE_USERS = '[Users] ADD_CHAT_ONLINE_USERS',
 	LOAD_INITIAL_NEW_USERS = '[Users] LOAD_INITIAL_NEW_USERS',
 	LOAD_FAILURE_NEW_USERS = '[Users] LOAD_FAILURE_NEW_USERS',
 	RESET_NEW_USERS = '[Users] RESET_NEW_USERS',
@@ -31,6 +33,19 @@ export class AddNewMoreUsers implements Action {
 		data: Users[];
 		message: string;
 		status: string;
+	}) { }
+}
+export class SendReceiveChatUser implements Action {
+	readonly type = UsersActionTypes.ADD_CHAT_USERS;
+	constructor(public payload: {
+		selectedID: string;
+		chat: Chat[];
+	}) { }
+}
+export class AddChatOnlineUsers implements Action {
+	readonly type = UsersActionTypes.ADD_CHAT_ONLINE_USERS;
+	constructor(public payload: {
+		users: { userID: string }[]
 	}) { }
 }
 export class SearchStartNewUsers implements Action {
@@ -85,6 +100,8 @@ export class ResetNewUsers implements Action {
 export type UsersActions =
 	| AddNewUsers
 	| AddNewMoreUsers
+	| SendReceiveChatUser
+	| AddChatOnlineUsers
 	| LoadInitialNewUsers
 	| SearchStartNewUsers
 	| SearchStartNewMoreUsers
