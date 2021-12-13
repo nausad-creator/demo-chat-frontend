@@ -73,11 +73,16 @@
 									<div class="tp-chat-tital d-flex"
 										*ngIf="(root.chat_view$ | async)?.userID">
 										<h5 [title]="(root.chat_view$ |
-										async)?.userName | titlecase" class="onlive-chater m-0"><img src="assets/images/profile-user-sm.png" alt="">
+										async)?.userName | titlecase" class="onlive-chater m-0">
+											<img src="assets/images/profile-user-sm.png"
+												alt="">
 											&nbsp;
 											{{(root.chat_view$ |
 											async)?.userName | titlecase}}
 										</h5>
+										<div [title]="(root.chat_view$ | async)?.status"
+											[ngClass]="{'selected-online': (root.chat_view$ | async)?.status === 'Online', 'selected-offline': (root.chat_view$ | async)?.status === 'Offline'}">
+										</div>
 										<div
 											class="dropdown deedit-dor ml-auto">
 											<a aria-expanded="false"

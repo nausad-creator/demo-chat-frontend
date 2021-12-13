@@ -16,6 +16,10 @@ export enum UsersActionTypes {
 	SEARCH_START_NEW_USERS = '[Users] SEARCH_START_NEW_USERS',
 	SEARCH_START_NEW_MORE_USERS = '[Users] SEARCH_START_NEW_MORE_USERS',
 	SEARCH_MORE_NEW_USERS = '[Users] SEARCH_MORE_NEW_USERS',
+	RESET_USERS_UNREAD_CHAT = '[Users] RESET_USERS_UNREAD_CHAT',
+	START_RESET_USERS_UNREAD_CHAT = '[Users] START_RESET_USERS_UNREAD_CHAT',
+	SUCCESS_RESET_USERS_UNREAD_CHAT = '[Users] SUCCESS_RESET_USERS_UNREAD_CHAT',
+	FAILURE_UNREAD_CHAT = '[Users] FAILURE_UNREAD_CHAT',
 }
 
 // NEW ACTIONS
@@ -96,6 +100,29 @@ export class ResetNewUsers implements Action {
 	readonly type = UsersActionTypes.RESET_NEW_USERS;
 	constructor(public query?: string) { }
 }
+export class ResetUsersUnreadChat implements Action {
+	readonly type = UsersActionTypes.RESET_USERS_UNREAD_CHAT;
+	constructor(public query?: string) { }
+}
+export class StartResetUsersUnreadChat implements Action {
+	readonly type = UsersActionTypes.START_RESET_USERS_UNREAD_CHAT;
+	constructor(public query: string) { }
+}
+export class SuccessResetUsersUnreadChat implements Action {
+	readonly type = UsersActionTypes.SUCCESS_RESET_USERS_UNREAD_CHAT;
+	constructor(public success: {
+		query: string;
+		code: number;
+		message?: string;
+	}) { }
+}
+export class FailureUnreadChat implements Action {
+	readonly type = UsersActionTypes.FAILURE_UNREAD_CHAT;
+	constructor(public err?: {
+		message: string;
+		status: string;
+	}) { }
+}
 
 export type UsersActions =
 	| AddNewUsers
@@ -110,4 +137,8 @@ export type UsersActions =
 	| SearchNewQueryNewUsers
 	| SearchMoreNewUsers
 	| FailureNewUsers
+	| ResetUsersUnreadChat
+	| StartResetUsersUnreadChat
+	| SuccessResetUsersUnreadChat
+	| FailureUnreadChat
 	| ResetNewUsers;

@@ -50,7 +50,7 @@ export class SharedComponent implements OnInit {
 		this.store.dispatch(new LoadInitialNewUsers(JSON.stringify({
 			userID: this.async.transform(this.auth.user)?.userID,
 			searchword: '',
-			pagesize: '10',
+			pagesize: '20',
 			page: '1',
 			sortBy: ''
 		})));

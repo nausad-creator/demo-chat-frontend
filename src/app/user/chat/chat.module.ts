@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule, TitleCasePipe } from '@angular/common';
 import { SharedComponent } from './shared/shared.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -37,6 +37,6 @@ import { ChatService } from 'src/app/chat.service';
 			},
 		]),
 	],
-	providers: [AsyncPipe, GroupByPipe, ChatService]
+	providers: [AsyncPipe, TitleCasePipe, GroupByPipe, ChatService]
 })
 export class ChatModule { }

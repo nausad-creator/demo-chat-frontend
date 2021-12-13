@@ -698,3 +698,44 @@ textarea.form-control {
 .fi-custom-upladfile input[type="file"] {
   display: none;
 }
+
+.notify .point {
+  background-color: #12b3f1;
+  position: absolute;
+  right: 15px;
+  position: absolute;
+  color: white;
+  width: 22px;
+  height: 20px;
+  border-radius: 50%;
+  line-height: 20px;
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.selected-online {
+  background-color: #16ff35;
+  position: absolute;
+  left: 52px;
+  top: 35px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  line-height: 20px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.selected-offline {
+  background-color: #fc7c13;
+  position: absolute;
+  left: 52px;
+  top: 35px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  line-height: 20px;
+  font-size: 11px;
+  text-align: center;
+}

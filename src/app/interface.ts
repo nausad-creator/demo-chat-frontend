@@ -13,15 +13,13 @@ export interface User {
 	userPassword: string;
 	userProfilePicture: string;
 	languageID: string;
-	userDeviceType: string;
-	userDeviceID: string;
 	userVerified: string;
 	userStatus: string;
-	userOTP: string;
-	userDOB: string;
 	userCreatedDate: string;
-	languageName: string;
-	chats: Chat[];
+	chats: [{
+		recent_chat: Chat[];
+		unread: Chat[]
+	}];
 }
 export interface Token {
 	access: {
@@ -96,4 +94,9 @@ export interface ResponseChats {
 	status: string;
 	code: number;
 	data: Chats[];
+}
+export interface ResponseRead {
+	message: string;
+	status: string;
+	code: number;
 }

@@ -7,22 +7,22 @@ import { State } from 'src/app';
 import { ChatService } from 'src/app/chat.service';
 import { RootService } from 'src/app/root.service';
 import { AddNewChats, AddNewMoreChats, LoadInitialNewChats, SearchStartNewChats, SearchStartNewMoreChats, SearchEndedSuccessNewChats, SearchEndedSuccessMoreNewChats, SearchNewQueryNewChats, SearchMoreNewChats, FailureNewChats, ResetNewChats, ChatsActionTypes, StartSendReceiveChats, SendChats, ReceiveChats } from '../actions/chat.actions';
-import { SendReceiveChatUser } from '../actions/users.actions';
+import { ResetUsersUnreadChat, SendReceiveChatUser } from '../actions/users.actions';
 
 @Injectable()
 export class ChatsEffects {
 	INITIAL_CHATS$ = createEffect(() => {
 		return this.actions$.pipe(
 			ofType(ChatsActionTypes.LOAD_INITIAL_NEW_CHATS),
-			tap((r) => new ResetNewChats(r.query)),
-			map((a) => new SearchStartNewChats(a.query)));
+			tap((r) => new ResetNewChats(r?.query)),
+			map((a) => new SearchStartNewChats(a?.query)));
 	});
 	UPDATES_CHATS$ = createEffect(() => {
 		return this.actions$.pipe(
 			ofType(ChatsActionTypes.SEARCH_NEW_QUERY_NEW_CHATS),
-			filter((action) => this.root.isNewSearchQuery(action.query)),
-			tap((r) => new ResetNewChats(r.query)),
-			map((a) => new SearchStartNewChats(a.query)));
+			filter((isNewUser) => this.root.isNewSearchQuery(isNewUser?.query, isNewUser.status)),
+			map((new_user) => new SearchStartNewChats(new_user?.query, new_user?.unread))
+		);
 	});
 	ADD_SEND_RECEIVE_CHATS$ = createEffect(() => {
 		return this.actions$.pipe(
@@ -33,7 +33,6 @@ export class ChatsEffects {
 	RECEIVE_CHATS$ = createEffect(() => {
 		return this.actions$.pipe(
 			ofType(ChatsActionTypes.RECEIVE_CHATS),
-			filter((action) => this.root.isUserSelected(action?.payload?.selected)),
 			map(p => new SendReceiveChatUser({ chat: p?.payload?.chat, selectedID: p.payload?.selected })),
 		);
 	});
@@ -73,7 +72,7 @@ export class ChatsEffects {
 					}],
 					message: 'No Data Found',
 					status: 'false'
-				}),
+				}, action[0].unread, action[0].query),
 					catchError(() => of(new FailureNewChats({
 						data: [{
 							results: [],
@@ -126,8 +125,17 @@ export class ChatsEffects {
 	});
 	SUCCESS_CHATS$ = createEffect(() => {
 		return this.actions$.pipe(ofType(ChatsActionTypes.SEARCH_ENDED_SUCCESS_NEW_CHATS),
-			map((a) => new AddNewChats(a.payload))
+			map((a) => {
+				this.store.dispatch(new AddNewChats(a?.payload, a?.unread, a?.query));
+				if (a?.unread > 0) {
+					setTimeout(() => {
+						this.store.dispatch(new ResetUsersUnreadChat(a?.query));
+					}, 500);
+				}
+			})
 		);
+	}, {
+		dispatch: false
 	});
 	SUCCESS_MORE_CHATS$ = createEffect(() => {
 		return this.actions$.pipe(ofType(ChatsActionTypes.SEARCH_ENDED_SUCCESS_MORE_NEW_CHATS),

@@ -22,11 +22,7 @@ export enum ChatsActionTypes {
 // NEW ACTIONS
 export class AddNewChats implements Action {
 	readonly type = ChatsActionTypes.ADD_NEW_CHATS;
-	constructor(public payload: {
-		data: Chats[];
-		message: string;
-		status: string;
-	}) { }
+	constructor(public payload: { data: Chats[]; message: string; status: string; }, public unread: number, public query: string) { }
 }
 export class AddNewMoreChats implements Action {
 	readonly type = ChatsActionTypes.ADD_NEW_MORE_CHATS;
@@ -59,7 +55,7 @@ export class SendChats implements Action {
 }
 export class SearchStartNewChats implements Action {
 	readonly type = ChatsActionTypes.SEARCH_START_NEW_CHATS;
-	constructor(public query: string) { }
+	constructor(public query: string, public unread?: number) { }
 }
 export class SearchStartNewMoreChats implements Action {
 	readonly type = ChatsActionTypes.SEARCH_START_NEW_MORE_CHATS;
@@ -71,11 +67,7 @@ export class LoadInitialNewChats implements Action {
 }
 export class SearchEndedSuccessNewChats implements Action {
 	readonly type = ChatsActionTypes.SEARCH_ENDED_SUCCESS_NEW_CHATS;
-	constructor(public payload: {
-		data: Chats[];
-		message: string;
-		status: string;
-	}) { }
+	constructor(public payload: { data: Chats[]; message: string; status: string; }, public unread: number, public query: string) { }
 }
 export class SearchEndedSuccessMoreNewChats implements Action {
 	readonly type = ChatsActionTypes.SEARCH_ENDED_SUCCESS_MORE_NEW_CHATS;
@@ -87,7 +79,7 @@ export class SearchEndedSuccessMoreNewChats implements Action {
 }
 export class SearchNewQueryNewChats implements Action {
 	readonly type = ChatsActionTypes.SEARCH_NEW_QUERY_NEW_CHATS;
-	constructor(public query: string) { }
+	constructor(public query: string, public unread: number, public status: string) { }
 }
 export class SearchMoreNewChats implements Action {
 	readonly type = ChatsActionTypes.SEARCH_MORE_NEW_CHATS;

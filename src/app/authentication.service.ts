@@ -185,14 +185,9 @@ export class AuthenticationService {
 			userPassword: '',
 			userProfilePicture: '',
 			languageID: '',
-			userDeviceType: '',
-			userDeviceID: '',
 			userVerified: '',
 			userStatus: '',
-			userOTP: '',
-			userDOB: '',
 			userCreatedDate: '',
-			languageName: '',
 			chats: null
 		});
 		if (window.sessionStorage) { sessionStorage.clear(); }

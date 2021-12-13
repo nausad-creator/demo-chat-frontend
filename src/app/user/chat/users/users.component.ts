@@ -7,8 +7,13 @@ import { SubSink } from 'subsink';
 @Component({
 	selector: 'app-users',
 	template: `
-	<li class="meetings-list" *ngFor="let user of users; trackBy: user_status ;let i=index">
-	<a [@hueRotate]="state" (@hueRotate.done)="togglehue()" data-toggle="modal" href="#" (click)="change_user.emit({userID: user?.userID, userName: user?.userFirstName + ' ' + user?.userLastName})" [ngClass]="{'active':selected===user?.userID}">
+	<li class="meetings-list" *ngFor="let user of users | orderBy: ['-userStatus', 'userFirstName']; trackBy: user_status;let i=index">
+	<a [@hueRotate]="state" (@hueRotate.done)="togglehue()" data-toggle="modal" href="#" (click)="change_user.emit({
+		userID: user?.userID,
+		userName: user?.userFirstName + ' ' + user?.userLastName,
+		unread: user?.unread,
+		status: user?.userStatus
+		})" [ngClass]="{'active':selected===user?.userID}">
 		<div class="meetings-schedul-list d-flex">
 			<div class="leftuser-img resultimg-circle">
 				<img [title]="(user?.userFirstName + ' ' + user?.userLastName) | titlecase" src="assets/images/profile-user-sm.png" alt="">
@@ -17,14 +22,15 @@ import { SubSink } from 'subsink';
 				<h6 [title]="(user?.userFirstName + ' ' + user?.userLastName) | titlecase" class="mb-0">{{(user?.userFirstName + ' ' + user?.userLastName) | titlecase}}
 				<i [title]="user?.userStatus === 'Online' ? 'Online' : 'Offline'" class="fa fa-circle" [ngClass]="{'green': user?.userStatus === 'Online', 'red': user?.userStatus === 'Offline'}" aria-hidden="true"></i>
 				</h6>
+				<div [title]="user?.unread + ' ' + 'unread ' + (user?.unread > 1 ? 'chats' : 'chat')" [class.notify]="user?.unread > 0"><span [class.point]="user?.unread > 0" *ngIf="user?.unread > 0">{{user?.unread}}</span></div>
 				<div class="detailsmall row m-0" *ngIf="user?.chats.length > 0">
-					<small>{{user?.userID === user?.chats[0]?.toUserId ? 'You: ' + user?.chats[0]?.message : user?.chats[0]?.senderName + ': ' + user?.chats[0]?.message}}</small>
+					<small [title]="user?.userID === user?.chats[0]?.toUserId ? 'You: ' + user?.chats[0]?.message : user?.chats[0]?.senderName + ': ' + user?.chats[0]?.message">{{user?.userID === user?.chats[0]?.toUserId ? 'You: ' + user?.chats[0]?.message : user?.chats[0]?.senderName + ': ' + user?.chats[0]?.message}}</small>
 				</div>
 				<div class="detailsmall row m-0" *ngIf="user?.chats.length === 0">
-					<small>Click to chat...</small>
+					<small [title]="'Click to chat...'">Click to chat...</small>
 				</div>
 			</div>
-			<time class="timimessage ml-auto">{{user?.chats[0]?.time}}</time>
+			<time class="timimessage ml-auto" [title]="user?.chats[0]?.time">{{user?.chats[0]?.time}}</time>
 		</div>
 	</a>
 	</li>
@@ -49,7 +55,12 @@ export class UsersComponent implements OnInit {
 	@Input() selected: string;
 	state = false;
 	subs = new SubSink();
-	@Output() change_user: EventEmitter<{ userID: string, userName: string }>
+	@Output() change_user: EventEmitter<{
+		userID: string,
+		userName: string,
+		unread: number,
+		status: string
+	}>
 		= new EventEmitter();
 	constructor(private root: RootService) { }
 	ngOnInit(): void {

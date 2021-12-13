@@ -1,4 +1,4 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, TitleCasePipe } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -73,7 +73,7 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 		totalPages: number;
 		totalResults: number;
 		query: string
-	}>({ page: 1, totalPages: 0, totalResults: 0, limit: 10, query: '' });
+	}>({ page: 1, totalPages: 0, totalResults: 0, limit: 20, query: '' });
 	size_chat$: Subject<{
 		page: number;
 		limit: number;
@@ -95,6 +95,7 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 		public auth: AuthenticationService,
 		public root: RootService,
 		private async: AsyncPipe,
+		private titlecase: TitleCasePipe,
 		readonly router: Router,
 		private store: Store<State>,
 		private ngZone: NgZone,
@@ -172,7 +173,7 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 			isSearchMore: boolean;
 		}>;
 	}
-	open_or_change = ($event?: { userID: string, userName: string }) => {
+	open_or_change = ($event?: { userID: string, userName: string, unread: number, status: string }) => {
 		this.store.dispatch(new SearchNewQueryNewChats(JSON.stringify({
 			userID: this.async.transform(this.auth.user)?.userID,
 			receiverUserID: $event?.userID,
@@ -181,14 +182,14 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 			pagesize: 20,
 			searchword: '',
 			sortBy: ''
-		})));
+		}), $event?.unread, $event?.status));
 	}
 	ngOnDestroy(): void {
 		this.subs.unsubscribe();
 		this.chat.logout();
 		chat_global.receiverUserID = '0';
 		this.store.dispatch(new ResetNewChats());
-		this.root.update_chat_view$.next({ userID: '', userName: '' });
+		this.root.update_chat_view$.next({ userID: '', userName: '', status: 'Offline' });
 	}
 	state_users = () => {
 		return this.store.select(users).pipe(
@@ -210,9 +211,10 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 							userEmail: user?.userEmail,
 							userCountryCode: user?.userCountryCode,
 							userMobile: user?.userMobile,
-							userStatus: user?.userStatus,
+							userStatus: user?.userStatus ? user?.userStatus : 'Offline',
 							userProfilePicture: user?.userProfilePicture,
-							chats: user?.chats.map(c => {
+							unread: user?.chats[0]?.unread.length,
+							chats: user?.chats[0]?.recent_chat.map(c => {
 								return {
 									chatID: c?.chatID,
 									fromUserId: c?.fromUserId,
@@ -332,7 +334,7 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.chat.cameOnline().subscribe(
 			userName => {
 				setTimeout(() => {
-					this.auth.SNACKBAR$.next({ textLabel: `${userName} came online.`, status: 'chat', timeoutMs: 5000 });
+					this.auth.SNACKBAR$.next({ textLabel: `${this.titlecase.transform(userName)} came online.`, status: 'chat', timeoutMs: 5000 });
 				}, 1000);
 			}
 		);
