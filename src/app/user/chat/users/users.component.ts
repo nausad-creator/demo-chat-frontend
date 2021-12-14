@@ -22,7 +22,7 @@ import { SubSink } from 'subsink';
 				<h6 [title]="(user?.userFirstName + ' ' + user?.userLastName) | titlecase" class="mb-0">{{(user?.userFirstName + ' ' + user?.userLastName) | titlecase}}
 				<i [title]="user?.userStatus === 'Online' ? 'Online' : 'Offline'" class="fa fa-circle" [ngClass]="{'green': user?.userStatus === 'Online', 'red': user?.userStatus === 'Offline'}" aria-hidden="true"></i>
 				</h6>
-				<div [title]="user?.unread + ' ' + 'unread ' + (user?.unread > 1 ? 'chats' : 'chat')" [class.notify]="user?.unread > 0"><span [class.point]="user?.unread > 0" *ngIf="user?.unread > 0">{{user?.unread}}</span></div>
+				<div [title]="user?.unread + ' ' + 'unread ' + (user?.unread > 1 ? 'chats' : 'chat')" [class.notify]="user?.unread > 0"><span [class.point]="user?.unread > 0" *ngIf="user?.unread > 0">{{user?.unread > 9 ? '9+' : user?.unread}}</span></div>
 				<div class="detailsmall row m-0" *ngIf="user?.chats.length > 0">
 					<small [title]="user?.userID === user?.chats[0]?.toUserId ? 'You: ' + user?.chats[0]?.message : user?.chats[0]?.senderName + ': ' + user?.chats[0]?.message">{{user?.userID === user?.chats[0]?.toUserId ? 'You: ' + user?.chats[0]?.message : user?.chats[0]?.senderName + ': ' + user?.chats[0]?.message}}</small>
 				</div>

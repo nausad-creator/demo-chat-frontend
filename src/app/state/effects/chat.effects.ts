@@ -33,9 +33,22 @@ export class ChatsEffects {
 	RECEIVE_CHATS$ = createEffect(() => {
 		return this.actions$.pipe(
 			ofType(ChatsActionTypes.RECEIVE_CHATS),
-			map(p => new SendReceiveChatUser({ chat: p?.payload?.chat, selectedID: p.payload?.selected })),
+			map((p) => {
+				this.store.dispatch(new SendReceiveChatUser({ chat: p?.payload?.chat, selectedID: p.payload?.selected }));
+				if (p?.payload?.selected === p?.payload?.chat[0]?.fromUserId) {
+					setTimeout(() => {
+						this.root.read(JSON.stringify({
+							userID: p?.payload?.chat[0]?.toUserId,
+							receiverUserID: p?.payload?.chat[0]?.fromUserId
+						})).subscribe();
+					}, 500);
+				}
+			}),
 		);
-	});
+	},
+		{
+			dispatch: false
+		});
 	SEND$ = createEffect(() => {
 		return this.actions$.pipe(ofType(ChatsActionTypes.SEND_CHATS),
 			map((a) => {

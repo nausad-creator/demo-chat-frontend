@@ -11,7 +11,7 @@ export class ChatService {
 	constructor() { }
 
 	check_connection = () => {
-		if (!socket.connected) {
+		if (!socket.connected && self.clientInformation.onLine) {
 			socket.connect();
 		}
 	}
