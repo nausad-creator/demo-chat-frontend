@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { AsyncPipe, CommonModule, TitleCasePipe } from '@angular/common';
+import { AsyncPipe, CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { SharedComponent } from './shared/shared.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -11,12 +11,14 @@ import { SkeletonsModule } from 'src/app/skeletons/skeletons.module';
 import { GroupByPipe, NgPipesModule } from 'ngx-pipes';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ChatService } from 'src/app/chat.service';
+import { CustomTimeAgoPipe } from './user-conversations/time-ago.pipe';
 
 @NgModule({
 	declarations: [
 		SharedComponent,
 		UsersComponent,
-		UserConversationsComponent
+		UserConversationsComponent,
+		CustomTimeAgoPipe
 	],
 	imports: [
 		CommonModule,
@@ -37,6 +39,6 @@ import { ChatService } from 'src/app/chat.service';
 			},
 		]),
 	],
-	providers: [AsyncPipe, TitleCasePipe, GroupByPipe, ChatService]
+	providers: [AsyncPipe, DatePipe, TitleCasePipe, GroupByPipe, ChatService]
 })
 export class ChatModule { }

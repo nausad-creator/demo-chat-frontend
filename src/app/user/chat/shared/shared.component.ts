@@ -303,7 +303,7 @@ export class SharedComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 	groupToArray = (chat: Chat[], date: string) => {
 		return {
-			date,
+			date: new Date(`${date}`),
 			data: _(chat).orderBy(d => d.time_in_ms, 'desc').reverse().map(c => {
 				return {
 					chatID: c?.chatID,

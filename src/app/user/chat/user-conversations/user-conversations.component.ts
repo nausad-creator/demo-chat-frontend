@@ -14,7 +14,7 @@ import { SubSink } from 'subsink';
 		<div *ngFor="let chat of chats">
 		<div [id]="chat.date" class="timeline text-center page-title">
 			<p class="line"></p>
-			<span class="timer">{{chat?.date | date: 'EEE, d MMM, y'}}</span>
+			<span class="timer">{{chat?.date | customTimeAgo}}</span>
 		</div>
 		<div class="" *ngFor="let item of chat?.data">
 			<!-- left -->
